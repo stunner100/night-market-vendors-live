@@ -23,7 +23,16 @@ jobs:
         with:
           node-version: 22
       - run: npm install
-      - uses: actions/configure-pages@v5
+      - name: Enable GitHub Pages
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh api --method POST "repos/${GITHUB_REPOSITORY}/pages" \
+            -f build_type=workflow \
+            -f "source[branch]=main" \
+            -f "source[path]=/" \
+            || true
       - run: npm run build
         env:
           GITHUB_PAGES: "true"
